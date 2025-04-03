@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { Apple, Coffee, Pizza, Utensils } from 'lucide-react';
 import NutritionForm from './NutritionForm';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 
 interface Meal {
-  id: number;
+  _id?: string;
   name: string;
-  icon: React.ElementType;
+  icon: string;
   time: string;
   calories: number;
   protein: number;
@@ -22,70 +23,74 @@ const mealCategories = {
 };
 
 const Nutrition: React.FC = () => {
-  const [meals, setMeals] = useState<Meal[]>([
-    { id: 1, name: 'Breakfast', icon: Coffee, time: '8:00 AM', calories: 450, protein: 20, carbs: 50, fats: 10 },
-    { id: 2, name: 'Lunch', icon: Pizza, time: '12:30 PM', calories: 650, protein: 30, carbs: 70, fats: 20 },
-    { id: 3, name: 'Snacks', icon: Apple, time: '3:30 PM', calories: 200, protein: 5, carbs: 30, fats: 2 },
-    { id: 4, name: 'Dinner', icon: Utensils, time: '7:00 PM', calories: 700, protein: 40, carbs: 80, fats: 25 },
-  ]);
-
+  const [meals, setMeals] = useState<Meal[]>([]);
   const [open, setOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [pendingMeal, setPendingMeal] = useState<any>(null);
+  const totalCalories = Array.isArray(meals) ? meals.reduce((acc, meal) => acc + meal.calories, 0) : 0;
 
+  // Fetch meals from MongoDB
+  useEffect(() => {
+    axios.get('http://localhost:5000/meals')
+      .then(response => {
+        console.log('Fetched meals:', response.data); // Debugging: Check the API response
+        setMeals(Array.isArray(response.data) ? response.data : []);
+      })
+      .catch(error => console.error('Error fetching meals:', error));
+  }, []);
+  
   const handleAddMeal = (nutritionData: any) => {
     setPendingMeal(nutritionData);
     setOpen(true);
   };
 
-  const confirmAddMeal = () => {
+  const confirmAddMeal = async () => {
     if (!selectedCategory || !pendingMeal) return;
 
-    const updatedMeals = meals.map((meal) => {
-      if (meal.name === selectedCategory) {
-        return {
-          ...meal,
-          calories: meal.calories + pendingMeal.nf_calories,
-          protein: meal.protein + pendingMeal.nf_protein,
-          carbs: meal.carbs + pendingMeal.nf_total_carbohydrate,
-          fats: meal.fats + pendingMeal.nf_total_fat,
-        };
-      }
-      return meal;
-    });
+    const newMeal: Meal = {
+      name: selectedCategory,
+      icon: mealCategories[selectedCategory as keyof typeof mealCategories].toString(),
+      time: new Date().toLocaleTimeString(),
+      calories: pendingMeal.nf_calories,
+      protein: pendingMeal.nf_protein,
+      carbs: pendingMeal.nf_total_carbohydrate,
+      fats: pendingMeal.nf_total_fat,
+    };
+    
 
-    setMeals(updatedMeals);
-    setOpen(false);
-    setSelectedCategory(null);
-    setPendingMeal(null);
+    try {
+      const response = await axios.post('http://localhost:5000/meals', newMeal);
+      console.log('Fetched meals:', response.data);
+
+      setMeals([...meals, response.data]); // Update UI with new meal
+      setOpen(false);
+      setSelectedCategory(null);
+      setPendingMeal(null);
+    } catch (error) {
+      console.error('Error saving meal:', error);
+    }
   };
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Nutrition Tracking</h1>
-      </div>
+      <h1 className="text-2xl font-bold text-gray-900">Nutrition Tracking</h1>
 
-      {/* Log Your Meal Section */}
+      {/* Log Meal Form */}
       <NutritionForm onAddMeal={handleAddMeal} />
 
       {/* Meal Selection Dialog */}
       <Dialog open={open} onClose={() => setOpen(false)}>
         <DialogTitle>Select Meal Category</DialogTitle>
         <DialogContent>
-          <div className="space-y-2">
-            {Object.keys(mealCategories).map((category) => (
-              <button
-                key={category}
-                className={`w-full px-4 py-2 rounded-md ${
-                  selectedCategory === category ? 'bg-blue-500 text-white' : 'bg-gray-200'
-                }`}
-                onClick={() => setSelectedCategory(category)}
-              >
-                {category}
-              </button>
-            ))}
-          </div>
+          {Object.keys(mealCategories).map((category) => (
+            <button
+              key={category}
+              className={`w-full px-4 py-2 rounded-md ${selectedCategory === category ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+              onClick={() => setSelectedCategory(category)}
+            >
+              {category}
+            </button>
+          ))}
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpen(false)}>Cancel</Button>
@@ -95,21 +100,27 @@ const Nutrition: React.FC = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Nutrition Section */}
+      {/* Nutrition Dashboard */}
       <div className="bg-white rounded-xl shadow-sm p-6">
         <h2 className="text-lg font-semibold text-gray-900">Today's Meals</h2>
         <p className="text-sm text-gray-500">
-          Total Calories: {meals.reduce((acc, meal) => acc + meal.calories, 0)} / 2400
+      
+
+       <div className="bg-white rounded-xl shadow-sm p-6">
+
+  <p className="text-sm text-gray-500">
+    Total Calories: {totalCalories}
+  </p>
+</div>
+
+
         </p>
 
         <div className="space-y-4 mt-4">
           {meals.map((meal) => {
-            const Icon = meal.icon;
+            const Icon = mealCategories[meal.name as keyof typeof mealCategories] || Utensils;
             return (
-              <div
-                key={meal.id}
-                className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-              >
+              <div key={meal._id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                 <div className="flex items-center space-x-4">
                   <div className="p-2 bg-white rounded-lg">
                     <Icon className="h-6 w-6 text-blue-600" />
