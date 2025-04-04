@@ -34,12 +34,24 @@ const NutritionForm: React.FC<NutritionFormProps> = ({ onAddMeal }) => {
 
   const handleAddMeal = () => {
     if (nutritionData) {
-      onAddMeal(nutritionData);
+      const formattedData = {
+        name: nutritionData.food_name,
+        calories: nutritionData.nf_calories,
+        protein: nutritionData.nf_protein,
+        carbs: nutritionData.nf_total_carbohydrate,
+        fats: nutritionData.nf_total_fat,
+        time: new Date().toLocaleTimeString(),
+        category: "Snacks", // or let user choose
+      };
+  
+      console.log("Formatted data before sending:", formattedData); // ✅ for debugging
+  
+      onAddMeal(formattedData);
       setFood('');
       setNutritionData(null);
     }
   };
-
+  
   return (
     <div className="max-w-lg mx-auto p-6 bg-white rounded-lg shadow-md mt-6">
       <h2 className="text-xl font-bold mb-4">Log Your Meal</h2>

@@ -1,4 +1,4 @@
-import React from 'react';
+
 import {
   BrowserRouter as Router,
   Routes,
@@ -7,11 +7,11 @@ import {
 } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Dashboard from './pages/Dashboard';
-import Nutrition from './pages/Nutrition';
 import Workouts from './pages/Workouts';
 import Progress from './pages/Progress';
 import Profile from './pages/Profile';
 import NutritionForm from './pages/NutritionForm';
+import Nutrition from './pages/Nutrition';
 function App() {
   const handleAddMeal = (mealData: any) => {
     console.log("Meal added:", mealData);
