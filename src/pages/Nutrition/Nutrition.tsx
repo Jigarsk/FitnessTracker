@@ -31,6 +31,10 @@ const Nutrition: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const totalCalories = meals.reduce((acc, meal) => acc + meal.calories, 0);
+  const totalProtein = meals.reduce((acc, meal) => acc + meal.protein, 0);
+const totalCarbs = meals.reduce((acc, meal) => acc + meal.carbs, 0);
+const totalFats = meals.reduce((acc, meal) => acc + meal.fats, 0);
+
 
   // Fetch meals with cleanup function to prevent memory leaks
   useEffect(() => {
@@ -128,8 +132,27 @@ const Nutrition: React.FC = () => {
 
       {/* Meals Display */}
       <div className="bg-white rounded-xl shadow-sm p-6">
-        <h2 className="text-lg font-semibold text-gray-900">Today's Meals</h2>
-        <p className="text-sm text-gray-500">Total Calories: {totalCalories || 0}</p>
+        <h2 className="text-lg font-semibold text-gray-900">Today's Macros</h2>
+    {/* Nutrient Summary Card */}
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+  <div className="bg-blue-100 text-blue-800 p-4 rounded-lg shadow">
+    <p className="text-sm">Total Calories</p>
+    <p className="text-xl font-semibold">{totalCalories.toFixed(2)} kcal</p>
+  </div>
+  <div className="bg-green-100 text-green-800 p-4 rounded-lg shadow">
+    <p className="text-sm">Protein</p>
+    <p className="text-xl font-semibold">{meals.reduce((acc, m) => acc + m.protein, 0).toFixed(2)} g</p>
+  </div>
+  <div className="bg-yellow-100 text-yellow-800 p-4 rounded-lg shadow">
+    <p className="text-sm">Carbs</p>
+    <p className="text-xl font-semibold">{meals.reduce((acc, m) => acc + m.carbs, 0).toFixed(2)} g</p>
+  </div>
+  <div className="bg-pink-100 text-pink-800 p-4 rounded-lg shadow">
+    <p className="text-sm">Fats</p>
+    <p className="text-xl font-semibold">{meals.reduce((acc, m) => acc + m.fats, 0).toFixed(2)} g</p>
+  </div>
+</div>
+
 
         <div className="space-y-4 mt-4">
         {meals

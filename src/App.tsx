@@ -10,8 +10,9 @@ import Dashboard from './pages/Dashboard';
 import Workouts from './pages/Workouts';
 import Progress from './pages/Progress';
 import Profile from './pages/Profile';
-import NutritionForm from './pages/NutritionForm';
-import Nutrition from './pages/Nutrition';
+import Nutrition from './pages/Nutrition/Nutrition';
+import NutritionForm from './pages/Nutrition/NutritionForm';
+
 function App() {
   const handleAddMeal = (mealData: any) => {
     console.log("Meal added:", mealData);
