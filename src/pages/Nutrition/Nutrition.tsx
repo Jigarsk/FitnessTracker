@@ -3,7 +3,9 @@ import axios from 'axios';
 import {  Coffee, Sandwich, Utensils } from 'lucide-react';
 import NutritionForm from './NutritionForm';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
+import { motion, AnimatePresence } from 'framer-motion';
 
+import { Trash } from "lucide-react";
 interface Meal {
   _id?: string;
   category: 'Breakfast' | 'Lunch' | 'Snacks' | 'Dinner';
@@ -22,6 +24,9 @@ const mealCategories = {
   Dinner: Utensils,
 };
 
+
+
+
 const Nutrition: React.FC = () => {
   const [meals, setMeals] = useState<Meal[]>([]);
   const [open, setOpen] = useState(false);
@@ -34,6 +39,25 @@ const Nutrition: React.FC = () => {
   const totalProtein = meals.reduce((acc, meal) => acc + meal.protein, 0);
 const totalCarbs = meals.reduce((acc, meal) => acc + meal.carbs, 0);
 const totalFats = meals.reduce((acc, meal) => acc + meal.fats, 0);
+
+
+const deleteMeal = async (id: string) => {
+  try {
+    await axios.delete(`http://localhost:5000/api/meals/${id}`);
+    setMeals(meals.filter(meal => meal._id !== id));
+  } catch (err) {
+    console.error('Error deleting meal:', err);
+  }
+};
+
+const handleDeleteMeal = async (mealId: string) => {
+  try {
+    await axios.delete(`http://localhost:5000/api/meals/${mealId}`);
+    setMeals(prevMeals => prevMeals.filter(meal => meal._id !== mealId));
+  } catch (error) {
+    console.error('Error deleting meal:', error);
+  }
+};
 
 
   // Fetch meals with cleanup function to prevent memory leaks
@@ -155,31 +179,49 @@ const totalFats = meals.reduce((acc, meal) => acc + meal.fats, 0);
 
 
         <div className="space-y-4 mt-4">
-        {meals
-  .filter(meal => !activeCategory || meal.category === activeCategory)
-  .map(meal => {
-    const Icon = mealCategories[meal.category as keyof typeof mealCategories];
+        <AnimatePresence>
+  {meals
+    .filter(meal => !activeCategory || meal.category === activeCategory)
+    .map(meal => {
+      const Icon = mealCategories[meal.category as keyof typeof mealCategories];
 
-    return (
-      <div key={meal._id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-        <div className="flex items-center space-x-4">
-          <div className="p-2 bg-white rounded-lg">
-            {Icon && <Icon className="h-6 w-6 text-blue-600" />}
+      return (
+        <motion.div
+          key={meal._id}
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.3 } }}
+          layout
+          className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-all"
+        >
+          <div className="flex items-center space-x-4">
+            <div className="p-2 bg-white rounded-lg">
+              {Icon && <Icon className="h-6 w-6 text-blue-600" />}
+            </div>
+            <div>
+              <h3 className="font-medium text-gray-900">{meal.name}</h3>
+              <p className="text-sm text-gray-500">{meal.time}</p>
+            </div>
           </div>
-          <div>
-            <h3 className="font-medium text-gray-900">{meal.name}</h3>
-            <p className="text-sm text-gray-500">{meal.time}</p>
+
+          <div className="flex items-center gap-4">
+            <div className="text-right">
+              <p className="font-medium text-gray-900">{meal.calories} cal</p>
+              <p className="text-sm text-gray-600">
+                Protein: {meal.protein}g | Carbs: {meal.carbs}g | Fats: {meal.fats}g
+              </p>
+            </div>
+            <button
+              className="text-red-600 hover:text-red-800 transition-colors"
+              onClick={() => meal._id && handleDeleteMeal(meal._id)}
+            >
+              <Trash className="h-5 w-5" />
+            </button>
           </div>
-        </div>
-        <div className="text-right">
-          <p className="font-medium text-gray-900">{meal.calories} cal</p>
-          <p className="text-sm text-gray-600">
-            Protein: {meal.protein}g | Carbs: {meal.carbs}g | Fats: {meal.fats}g
-          </p>
-        </div>
-      </div>
-    );
-  })}
+        </motion.div>
+      );
+    })}
+</AnimatePresence>
 
         </div>
       </div>

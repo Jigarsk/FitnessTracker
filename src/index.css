@@ -1,3 +1,14 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+.meal-item {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    opacity: 1;
+    transform: translateX(0);
+  }
+  
+  .meal-item.deleting {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+  

@@ -6,6 +6,7 @@ const morgan = require('morgan');
 
 // Import routes
 const mealRoutes = require('./Routes/mealRoutes');
+const workoutRoutes = require('./Routes/workoutRoutes'); // Import the workout routes
 
 dotenv.config();
 
@@ -27,11 +28,14 @@ mongoose.connect(process.env.MONGODB_URI || "mongodb+srv://Jigar:Jigar@cluster0m
 
 // Test route
 app.get('/', (req, res) => {
-  res.send('🍽️ Meal API is running!');
+  res.send('🍽️ Meal API and Workout API are running!');
 });
 
 // Meal Routes
 app.use('/api/meals', mealRoutes);
+
+// Workout Routes
+app.use('/api/workouts', workoutRoutes); // Add workout routes to the server
 
 // Start Server
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
