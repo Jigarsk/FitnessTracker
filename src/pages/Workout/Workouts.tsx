@@ -1,17 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import  { useState } from 'react';
 import { Dumbbell, Timer, Bike, Waves, Flame, Trash2, Search } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useWorkoutContext } from '../../context/workoutContext'; // Import context hook
 import WorkoutForm from './WorkoutForm';
-import axios from 'axios';
-
-// Define a type for the workout object
-interface Workout {
-  id: number;
-  type: string;
-  duration: string;
-  calories: number;
-  time: string;
-}
 
 const getIcon = (type: string) => {
   const normalized = type.toLowerCase();
@@ -24,55 +15,11 @@ const getIcon = (type: string) => {
 
 const Workouts = () => {
   const navigate = useNavigate();
-  const [workouts, setWorkouts] = useState<Workout[]>([]); // Holds workouts fetched from DB
+  const location = useLocation();  // Use location hook for current path
+  const { workouts, deleteWorkout, totalCaloriesBurned } = useWorkoutContext(); // Access context
+
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('');
-
-  // Fetch workouts from the backend
-  useEffect(() => {
-    const fetchWorkouts = async () => {
-      try {
-        const response = await axios.get('http://localhost:5000/api/workouts');
-        setWorkouts(response.data); // Update workouts state
-      } catch (error) {
-        console.error('Error fetching workouts:', error);
-      }
-    };
-
-    fetchWorkouts();
-  }, []); // Run once on component mount
-
-  const handleAddWorkout = async (workout: Workout) => {
-    try {
-      const response = await axios.post('http://localhost:5000/api/add-workout', {
-        type: workout.type,
-        duration: workout.duration,
-        calories: workout.calories.toString(),
-        time: workout.time,
-      });
-
-      // Add the new workout to the state
-      setWorkouts([...workouts, response.data.workout]);
-    } catch (error) {
-      console.error('Error adding workout:', error);
-    }
-  };
-  const handleDeleteWorkout = async (id: number) => { 
-    try {
-      console.log("Deleting workout with ID:", id);  
-      await axios.delete(`http://localhost:5000/api/workouts/${id}`);
-      const updated = workouts.filter((w) => w.id !== id);  // Ensure to use string comparison
-      setWorkouts(updated);
-    } catch (error) {
-      console.error('Error deleting workout:', error);
-    }
-  };
-  
-  
-  const totalCalories = workouts.reduce(
-    (sum, w) => sum + (w.calories || 0),
-    0
-  );
 
   const filteredWorkouts = workouts.filter((workout) => {
     const matchSearch = workout.type.toLowerCase().includes(searchTerm.toLowerCase());
@@ -92,10 +39,10 @@ const Workouts = () => {
         </button>
       </div>
 
-      {!window.location.pathname.includes('/log-workout') && (
+      {!location.pathname.includes('/log-workout') && (
         <>
           <div className="p-4 bg-green-100 border-l-4 border-green-500 text-green-700 rounded shadow">
-            <strong>Total Calories Burned:</strong> {totalCalories.toFixed(2)} kcal
+            <strong>Total Calories Burned:</strong> {totalCaloriesBurned.toFixed(2)} kcal
           </div>
 
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -126,8 +73,9 @@ const Workouts = () => {
         </>
       )}
 
-      {window.location.pathname.includes('/log-workout') ? (
-        <WorkoutForm onAddWorkout={handleAddWorkout} />
+      {location.pathname.includes('/log-workout') ? (
+        // Conditionally render the WorkoutForm component
+        <WorkoutForm  />
       ) : (
         <div className="grid gap-4">
           {filteredWorkouts.length === 0 ? (
@@ -150,7 +98,7 @@ const Workouts = () => {
                 <span className="text-sm text-gray-500">{workout.time}</span>
                 <button
                   className="text-red-500 hover:text-red-700 ml-4 p-2 rounded-full hover:bg-gray-100"
-                  onClick={() => handleDeleteWorkout(workout.id)}
+                  onClick={() => deleteWorkout(workout.id)} // Use context function
                 >
                   <Trash2 className="w-5 h-5" />
                 </button>

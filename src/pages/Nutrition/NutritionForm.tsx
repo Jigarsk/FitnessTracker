@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNutrition } from '../../context/nutritionContext';
 
 interface NutritionFormProps {
   onAddMeal: (nutritionData: any) => void;
 }
 
 const NutritionForm: React.FC<NutritionFormProps> = ({ onAddMeal }) => {
+  const { addMeal } = useNutrition(); // Get the addMeal function from context
   const [food, setFood] = useState<string>('');
   const [nutritionData, setNutritionData] = useState<any>(null);
 
+  // Fetch nutrition info from the Nutritionix API
   const fetchNutrition = async () => {
     const API_ID = '053e4ffa';
     const API_KEY = '2cbdf845a0a8c5daf15a942c4b9455f7';
@@ -26,12 +29,13 @@ const NutritionForm: React.FC<NutritionFormProps> = ({ onAddMeal }) => {
         }
       );
 
-      setNutritionData(response.data.foods[0]);
+      setNutritionData(response.data.foods[0]); // Store the nutrition data
     } catch (error) {
       console.error('Error fetching nutrition data:', error);
     }
   };
 
+  // Handle adding the meal to context
   const handleAddMeal = () => {
     if (nutritionData) {
       const formattedData = {
@@ -41,17 +45,18 @@ const NutritionForm: React.FC<NutritionFormProps> = ({ onAddMeal }) => {
         carbs: nutritionData.nf_total_carbohydrate,
         fats: nutritionData.nf_total_fat,
         time: new Date().toLocaleTimeString(),
-        category: "Snacks", // or let user choose
+        category: 'Snacks', // Can be customizable by user
       };
-  
-      console.log("Formatted data before sending:", formattedData); // ✅ for debugging
-  
-      onAddMeal(formattedData);
-      setFood('');
-      setNutritionData(null);
+
+      console.log('Formatted data before sending:', formattedData); // Debugging line
+
+      addMeal(formattedData); // Update the global state via context
+      onAddMeal(formattedData); // Optional: call the prop function for local logging
+      setFood(''); // Reset the input field
+      setNutritionData(null); // Reset the nutrition data
     }
   };
-  
+
   return (
     <div className="max-w-lg mx-auto p-6 bg-white rounded-lg shadow-md mt-6">
       <h2 className="text-xl font-bold mb-4">Log Your Meal</h2>
@@ -60,7 +65,7 @@ const NutritionForm: React.FC<NutritionFormProps> = ({ onAddMeal }) => {
         className="w-full border p-2 rounded"
         placeholder="Enter food (e.g., 1 apple)"
         value={food}
-        onChange={(e) => setFood(e.target.value)}
+        onChange={(e) => setFood(e.target.value)} // Handle input change
       />
       <button className="mt-3 bg-blue-500 text-white px-4 py-2 rounded" onClick={fetchNutrition}>
         Get Nutrition Info

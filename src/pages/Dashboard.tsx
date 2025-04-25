@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import NutritionForm from './Nutrition/NutritionForm'; 
+import NutritionForm from './Nutrition/NutritionForm';
 import {
   Flame,
   Salad,
@@ -13,6 +13,7 @@ import {
 import { useNutrition } from '../context/nutritionContext';
 
 const Dashboard = () => {
+  const { totalCalories } = useNutrition();
 
 
   const [loggedMeals, setLoggedMeals] = useState<any[]>([]);
@@ -24,7 +25,7 @@ const Dashboard = () => {
   const [activityLevel, setActivityLevel] = useState<string>('sedentary');
   const [bmr, setBmr] = useState<number | null>(null);
   const [dailyCalories, setDailyCalories] = useState<number | null>(null); // To store the daily calorie calculation
-  const { totalCalories } = useNutrition();
+
 
   useEffect(() => {
     const meals = localStorage.getItem('loggedMeals');
@@ -52,7 +53,7 @@ const Dashboard = () => {
     setLoggedMeals(updatedMeals);
     localStorage.setItem('loggedMeals', JSON.stringify(updatedMeals));
   };
-  
+
 
   const handleSubmit = () => {
     // Calculate BMR using Mifflin-St Jeor Equation (for men and women)
@@ -82,17 +83,19 @@ const Dashboard = () => {
     localStorage.setItem('activityLevel', activityLevel);
   };
 
-  const totalCaloriesConsumed = dailyCalories || loggedMeals.reduce(
+  const totalCaloriesConsumed = totalCalories || loggedMeals.reduce(
     (sum, meal) => sum + (parseFloat(meal.calories) || 0),
     0
   );
+
 
   const totalCaloriesBurned = loggedWorkouts.reduce(
     (sum, workout) => sum + (parseFloat(workout.calories) || 0),
     0
   );
 
-  const netCalories = totalCaloriesConsumed - totalCaloriesBurned;
+  const netCalories = dailyCalories + totalCaloriesBurned - totalCaloriesConsumed;
+
 
   const lastMeal = loggedMeals[0];
   const lastWorkout = loggedWorkouts[0];
@@ -187,15 +190,17 @@ const Dashboard = () => {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Calories Consumed */}
+
         <div className="bg-white p-5 rounded-2xl shadow-md border-l-4 border-green-500">
           <div className="flex items-center gap-4">
             <Salad className="text-green-500 w-6 h-6" />
             <h2 className="text-xl font-semibold">Calories Consumed</h2>
           </div>
           <p className="mt-2 text-2xl text-gray-700">
-             {totalCalories}/{netCalories?.toFixed(2)} kcal
+            {totalCalories.toFixed(2)} kcal
           </p>
         </div>
+
 
         {/* Calories Burned */}
         <div className="bg-white p-5 rounded-2xl shadow-md border-l-4 border-blue-500">
@@ -221,7 +226,7 @@ const Dashboard = () => {
             <Utensils className="text-yellow-500 w-6 h-6" />
             <h2 className="text-xl font-semibold">Meals Logged</h2>
           </div>
-          <p className="mt-2 text-2xl text-gray-700">{loggedMeals.length}</p>
+          <p className="mt-2 text-2xl text-gray-700">{handleAddMeal.length}</p>
         </div>
 
         {/* Total Workouts */}
@@ -232,7 +237,9 @@ const Dashboard = () => {
           </div>
           <p className="mt-2 text-2xl text-gray-700">{loggedWorkouts.length}</p>
         </div>
+
       </div>
+
     </div>
   );
 };

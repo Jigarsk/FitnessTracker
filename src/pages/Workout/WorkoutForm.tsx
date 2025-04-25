@@ -1,25 +1,15 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useWorkoutContext } from '../../context/workoutContext'; // Import context hook
 
-interface WorkoutFormProps {
-  onAddWorkout: (workoutData: WorkoutData) => void;
-}
-
-interface WorkoutData {
-  id: number;
-  type: string;
-  duration: string;
-  calories: number;
-  time: string;
-}
-
-const WorkoutForm: React.FC<WorkoutFormProps> = ({ onAddWorkout }) => {
+const WorkoutForm: React.FC = () => {
   const [exercise, setExercise] = useState<string>('');
-  const [workoutData, setWorkoutData] = useState<WorkoutData | null>(null);
+  const [workoutData, setWorkoutData] = useState<any | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
+  const { addWorkout } = useWorkoutContext(); // Access context
+
   const fetchWorkoutData = async () => {
     const API_ID = '053e4ffa';
     const API_KEY = '2cbdf845a0a8c5daf15a942c4b9455f7';
@@ -52,31 +42,24 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ onAddWorkout }) => {
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         });
         setError(null);
-        console.log('Fetched Workout Data:', data);  // Debugging: Check if data is fetched correctly
       } else {
         setError('No workout data found for the given exercise.');
       }
     } catch (error) {
-      console.error('Error fetching workout data:', error);
       setError('Unable to fetch workout data. Try again later.');
     }
   };
-
-
-
 
   const handleAddWorkout = async () => {
     if (workoutData) {
       try {
         // Send the workout data to the server
         await axios.post('http://localhost:5000/api/workouts', workoutData);
-        console.log('Sending workout data:', workoutData);
-
-        onAddWorkout(workoutData);  // Passing workout data back to Workouts.tsx
-        setExercise('');  // Clear the input field
-        setWorkoutData(null);  // Reset workout data
+        addWorkout(workoutData); // Add to context
+        setExercise('');
+        setWorkoutData(null);
+        navigate('/'); // Redirect to workouts page
       } catch (error) {
-        console.error('Error adding workout:', error);
         setError('Unable to add workout. Try again later.');
       }
     }
@@ -106,14 +89,11 @@ const WorkoutForm: React.FC<WorkoutFormProps> = ({ onAddWorkout }) => {
           <p>Duration: {workoutData.duration}</p>
           <p>Calories Burned: {workoutData.calories.toFixed(2)} kcal</p>
           <button
-  className="mt-2 bg-green-600 text-white px-4 py-2 rounded"
-  onClick={async () => {
-    await handleAddWorkout(); // Ensures workout is added before navigating
-    navigate('/log-workout');
-  }}
->
-  Add to Workouts
-</button>
+            className="mt-2 bg-green-600 text-white px-4 py-2 rounded"
+            onClick={handleAddWorkout}
+          >
+            Add to Workouts
+          </button>
         </div>
       )}
     </div>

@@ -1,39 +1,36 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 
-// Define types
-interface Meal {
+type Meal = {
   name: string;
   calories: number;
-  // Add other fields as needed
-}
-
-interface NutritionContextType {
-  meals: Meal[];
-  setMeals: React.Dispatch<React.SetStateAction<Meal[]>>;
-  totalCalories: number;
-}
-
-// Create context
-const NutritionContext = createContext<NutritionContextType | undefined>(undefined);
-
-// Custom hook
-export const useNutrition = () => {
-  const context = useContext(NutritionContext);
-  if (!context) {
-    throw new Error("useNutrition must be used within a NutritionProvider");
-  }
-  return context;
 };
 
-// Provider
-export const NutritionProvider = ({ children }: { children: ReactNode }) => {
+type NutritionContextType = {
+  meals: Meal[];
+  addMeal: (meal: Meal) => void;
+  totalCalories: number;
+};
+
+const NutritionContext = createContext<NutritionContextType | undefined>(undefined);
+
+export const NutritionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [meals, setMeals] = useState<Meal[]>([]);
 
-  const totalCalories = meals.reduce((acc, meal) => acc + meal.calories, 0);
+  const addMeal = (meal: Meal) => {
+    setMeals(prev => [...prev, meal]);
+  };
+
+  const totalCalories = meals.reduce((sum, meal) => sum + meal.calories, 0);
 
   return (
-    <NutritionContext.Provider value={{ meals, setMeals, totalCalories }}>
+    <NutritionContext.Provider value={{ meals, addMeal, totalCalories }}>
       {children}
     </NutritionContext.Provider>
   );
+};
+
+export const useNutrition = () => {
+  const context = useContext(NutritionContext);
+  if (!context) throw new Error("useNutrition must be used within a NutritionProvider");
+  return context;
 };
