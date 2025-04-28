@@ -3,11 +3,11 @@ import { User, Mail, Phone, Calendar, MapPin, Settings, Shield, Bell } from 'luc
 
 const Profile = () => {
   const personalInfo = {
-    name: 'John Doe',
-    email: 'john.doe@example.com',
-    phone: '+1 (555) 123-4567',
-    birthdate: 'January 15, 1990',
-    location: 'San Francisco, CA',
+    name: 'Jigar Kayastha',
+    email: 'jigarKayastha@gmail.com',
+    phone: '+918455215555',
+    birthdate: 'January 15, 2002',
+    location: 'Ahmedabad, India',
   };
 
   const preferences = [
