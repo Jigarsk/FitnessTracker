@@ -1,8 +1,24 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { Activity, Dumbbell, Home, LineChart, User } from 'lucide-react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { Activity, Dumbbell, Home, LineChart, User, LogOut } from 'lucide-react';
+import { signOut } from 'firebase/auth';
+import { auth } from '../firebase';
 
 const Navbar = () => {
+  const navigate = useNavigate();
+  const username = localStorage.getItem('username') || 'User';
+
+  // Log out the user and redirect to the login page
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      localStorage.removeItem('username');
+      navigate('/home');
+    } catch (error) {
+      console.error('Error logging out: ', error);
+    }
+  };
+
   const navItems = [
     { to: '/dashboard', icon: Home, label: 'Dashboard' },
     { to: '/nutrition', icon: Activity, label: 'Nutrition' },
@@ -37,6 +53,20 @@ const Navbar = () => {
                 <span>{label}</span>
               </NavLink>
             ))}
+          </div>
+
+          {/* Username and Logout */}
+          <div className="flex items-center space-x-4">
+            <h1 className="text-sm font-medium text-gray-800">
+              Welcome Back - {username}
+            </h1>
+            <button
+              onClick={handleLogout}
+              className="text-sm font-medium text-gray-600 hover:text-red-600 flex items-center space-x-2"
+            >
+              <LogOut className="h-5 w-5" />
+              <span>Logout</span>
+            </button>
           </div>
         </div>
       </div>

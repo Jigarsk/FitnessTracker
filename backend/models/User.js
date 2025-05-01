@@ -1,29 +1,13 @@
-// models/User.js
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true,  // Ensures email is unique
-  },
-  phone: {
-    type: String,
-    required: true,
-  },
-  birthdate: {
-    type: String,
-    required: true,
-  },
-  location: {
-    type: String,
-    required: true,
-  },
-});
+  name: { type: String },
+  email: { type: String, unique: true },
+  phone: { type: String },
+  birthdate: { type: String },
+  location: { type: String },
+  // Optionally:
+  // uid: { type: String, unique: true } // if using Firebase or custom auth
+}, { timestamps: true });
 
-const User = mongoose.model('User', userSchema);
-module.exports = User;
+module.exports = mongoose.model('User', userSchema);

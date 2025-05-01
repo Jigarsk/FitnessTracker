@@ -7,7 +7,7 @@ const morgan = require('morgan');
 // Import routes
 const mealRoutes = require('./Routes/mealRoutes');
 const workoutRoutes = require('./Routes/workoutRoutes'); // Import the workout routes
-
+const profileRoutes = require('./Routes/profileRoutes');
 dotenv.config();
 
 const app = express();
@@ -36,6 +36,7 @@ app.use('/api/meals', mealRoutes);
 
 // Workout Routes
 app.use('/api/workouts', workoutRoutes); // Add workout routes to the server
+app.use('/api/profile', profileRoutes); // 
 
 // Start Server
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
