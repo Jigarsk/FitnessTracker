@@ -1,4 +1,3 @@
-import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { Activity, Dumbbell, Home, LineChart, User, LogOut } from 'lucide-react';
 import { signOut } from 'firebase/auth';

@@ -11,8 +11,9 @@ const WorkoutForm: React.FC = () => {
   const { addWorkout } = useWorkoutContext(); // Access context
 
   const fetchWorkoutData = async () => {
-    const API_ID = '053e4ffa';
-    const API_KEY = '2cbdf845a0a8c5daf15a942c4b9455f7';
+    const API_ID = import.meta.env.VITE_NUTRITIONIX_APP_ID;
+    const API_KEY = import.meta.env.VITE_NUTRITIONIX_APP_KEY;
+    
 
     if (!exercise.trim()) {
       setError('Please enter an exercise.');
@@ -58,7 +59,7 @@ const WorkoutForm: React.FC = () => {
         addWorkout(workoutData); // Add to context
         setExercise('');
         setWorkoutData(null);
-        navigate('/'); // Redirect to workouts page
+        navigate('/workouts'); // Redirect to workouts page
       } catch (error) {
         setError('Unable to add workout. Try again later.');
       }

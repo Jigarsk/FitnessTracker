@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import NutritionForm from './Nutrition/NutritionForm';
+import  { useEffect, useState } from 'react';
+
 import {
   Flame,
   Salad,
   BarChart3,
-  Timer,
+
   Dumbbell,
   Utensils,
-  CalendarDays,
+
 } from 'lucide-react';
 import { useNutrition } from '../context/nutritionContext';
 

@@ -13,8 +13,9 @@ const NutritionForm: React.FC<NutritionFormProps> = ({ onAddMeal }) => {
 
   // Fetch nutrition info from the Nutritionix API
   const fetchNutrition = async () => {
-    const API_ID = '053e4ffa';
-    const API_KEY = '2cbdf845a0a8c5daf15a942c4b9455f7';
+    const API_ID = import.meta.env.VITE_NUTRITIONIX_APP_ID;
+    const API_KEY = import.meta.env.VITE_NUTRITIONIX_APP_KEY;
+    
 
     try {
       const response = await axios.post(
