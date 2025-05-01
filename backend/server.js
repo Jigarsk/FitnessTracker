@@ -19,7 +19,7 @@ app.use(express.json());
 app.use(morgan('dev'));
 
 // MongoDB Connection
-mongoose.connect(process.env.MONGODB_URI || "mongodb+srv://Jigar:Jigar@cluster0myfitnee.xoheyqt.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0myfitnee", {
+mongoose.connect(process.env.MONGO_URI , {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
