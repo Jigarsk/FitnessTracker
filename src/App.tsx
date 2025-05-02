@@ -90,7 +90,7 @@ function App() {
               path="/log-workout"
               element={
                 <PrivateRoute>
-                  <ProtectedLayout><WorkoutForm onAddWorkout={handleAddWorkout} /></ProtectedLayout>
+                  <ProtectedLayout><WorkoutForm /></ProtectedLayout>
                 </PrivateRoute>
               }
             />

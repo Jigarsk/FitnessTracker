@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:5000/api/auth"; // Your backend URL
+const API_URL = "import.meta.env.VITE_API_URL/api/auth"; // Your backend URL
 
 // API call for signup
 export const signupUser = async (data: { username: string; email: string; password: string }) => {
