@@ -23,7 +23,7 @@ const mealCategories = {
   Dinner: Utensils,
 };
 
-const BASE_URL = process.env.REACTURL;
+const BASE_URL = process.env.FRONTENDURL;
 
 const Nutrition: React.FC = () => {
   const [meals, setMeals] = useState<Meal[]>([]);
