@@ -23,7 +23,7 @@ const mealCategories = {
   Dinner: Utensils,
 };
 
-const BASE_URL = process.env.FRONTENDURL;
+const BASE_URL = process.env.FRONTENDURL || 'http://localhost:5000';
 
 const Nutrition: React.FC = () => {
   const [meals, setMeals] = useState<Meal[]>([]);
@@ -40,7 +40,7 @@ const Nutrition: React.FC = () => {
 
   const handleDeleteMeal = async (mealId: string) => {
     try {
-      await axios.delete(`${BASE_URL}/api/meals/${mealId}`);
+      await axios.delete(`https://fitnesstracker-e1ys.onrender.com/api/meals/${mealId}`);
       setMeals(prevMeals => prevMeals.filter(meal => meal._id !== mealId));
     } catch (error) {
       console.error('Error deleting meal:', error);
@@ -50,7 +50,7 @@ const Nutrition: React.FC = () => {
   useEffect(() => {
     const fetchMeals = async () => {
       try {
-        const response = await axios.get(`${BASE_URL}/api/meals`);
+        const response = await axios.get(`https://fitnesstracker-e1ys.onrender.com/api/meals`);
         if (Array.isArray(response.data)) {
           setMeals(response.data);
         }
@@ -82,7 +82,7 @@ const Nutrition: React.FC = () => {
     };
 
     try {
-      const response = await axios.post(`${BASE_URL}/api/meals`, newMeal);
+      const response = await axios.post(`https://fitnesstracker-e1ys.onrender.com/api/meals`, newMeal);
       setMeals([...meals, response.data]);
       setOpen(false);
       setSelectedCategory(null);
