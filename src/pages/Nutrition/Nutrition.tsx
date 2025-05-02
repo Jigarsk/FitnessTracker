@@ -23,7 +23,7 @@ const mealCategories = {
   Dinner: Utensils,
 };
 
-const BASE_URL = process.env.FRONTENDURL || 'http://localhost:5000';
+const BASE_URL = import.meta.env.VITE_FRONTENDURL || 'http://localhost:5000';
 
 const Nutrition: React.FC = () => {
   const [meals, setMeals] = useState<Meal[]>([]);

@@ -9,11 +9,11 @@ const WorkoutForm: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const { addWorkout } = useWorkoutContext(); // Access context
+  const BASE_URL = 'http://localhost:5000/';
 
   const fetchWorkoutData = async () => {
     const API_ID = import.meta.env.VITE_NUTRITIONIX_APP_ID;
     const API_KEY = import.meta.env.VITE_NUTRITIONIX_APP_KEY;
-    
 
     if (!exercise.trim()) {
       setError('Please enter an exercise.');
