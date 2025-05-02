@@ -23,7 +23,7 @@ const mealCategories = {
   Dinner: Utensils,
 };
 
-const BASE_URL = import.meta.env.VITE_API_URL;
+const BASE_URL = process.env.REACTURL;
 
 const Nutrition: React.FC = () => {
   const [meals, setMeals] = useState<Meal[]>([]);
